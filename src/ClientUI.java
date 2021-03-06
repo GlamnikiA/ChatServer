@@ -1,8 +1,9 @@
-package GU;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ClientUI extends JPanel{
     private Client client;
@@ -40,8 +41,10 @@ public class ClientUI extends JPanel{
     private JLabel lblPicture;
     private JLabel lblSendTo;
     private JSeparator sep;
+    private ImageIcon profilePicture;
 
-    public ClientUI() {
+    public ClientUI(Client client) {
+        this.client = client;
         createPanels();
         setLayout();
         initializeComponents();
@@ -169,7 +172,33 @@ public class ClientUI extends JPanel{
         btnDisconnect = new JButton("Disconnect");
         btnDisconnect.setPreferredSize(new Dimension(100, 170));
     }
-    public static void main(String[] args) {
-        new ClientUI();
+
+    public JTextField getTfHost() {
+        return tfHost;
+    }
+
+    public JTextField getTfPort() {
+        return tfPort;
+    }
+
+    public JTextField getTfName() {
+        return tfName;
+    }
+
+    public ImageIcon getProfilePicture() {
+        return profilePicture;
+    }
+    private class ButtonActionListeners implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == btnSend) {
+                client.buttonPressed(ButtonType.Send);
+            } else if(e.getSource() == btnConnect) {
+                client.buttonPressed(ButtonType.Connect);
+            } else if(e.getSource() == btnDisconnect) {
+                client.buttonPressed(ButtonType.Disconnect);
+            }
+        }
     }
 }
