@@ -27,4 +27,10 @@ public class Message implements Serializable {
     public void setDelivered() {
         this.delivered = new Date();
     }
+    public Date getReceived() {
+        return received;
+    }
+    public Date getDelivered() {
+        return delivered;
+    }
 }
