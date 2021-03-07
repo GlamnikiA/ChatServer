@@ -4,6 +4,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class ClientUI extends JPanel{
     private Client client;
@@ -24,7 +25,7 @@ public class ClientUI extends JPanel{
     private JScrollPane chatPane;
     private JScrollPane clientPane;
     private JTextArea taChatbox;
-    private JButton btnPicture;
+    private JButton btnMessageImage;
     private JButton btnSend;
     private JButton btnContacts;
     private JTextField tfMessage;
@@ -42,6 +43,11 @@ public class ClientUI extends JPanel{
     private JLabel lblSendTo;
     private JSeparator sep;
     private ImageIcon profilePicture;
+    private String pictureFile;
+    private ImageIcon messageImage;
+    private ArrayList<JLabel> lblUsers = new ArrayList<>();
+    private StringBuilder sendTo = new StringBuilder();
+    int count = 0;
 
     public ClientUI(Client client) {
         this.client = client;
@@ -59,7 +65,7 @@ public class ClientUI extends JPanel{
         pnlCenterW.add(lblMessage, BorderLayout.CENTER);
         pnlCenterW.add(tfMessage, BorderLayout.EAST);
         pnlCenter.add(pnlCenterW, BorderLayout.CENTER);
-        pnlCenterE.add(btnPicture);
+        pnlCenterE.add(btnMessageImage);
         pnlCenterE.add(btnSend);
         pnlCenterE.add(btnContacts);
         pnlCenter.add(pnlCenterE, BorderLayout.EAST);
@@ -89,6 +95,8 @@ public class ClientUI extends JPanel{
         frame.setContentPane(this);
         frame.pack();
         frame.setVisible(true);
+
+        addListeners();
     }
     private void createPanels() {
         pnlNorth = new JPanel();
@@ -143,8 +151,8 @@ public class ClientUI extends JPanel{
         tfMessage = new JTextField();
         tfMessage.setPreferredSize(new Dimension(300, 30));
         tfMessage.setOpaque(true);
-        btnPicture = new JButton("...");
-        btnPicture.setPreferredSize(new Dimension(100, 30));
+        btnMessageImage = new JButton("...");
+        btnMessageImage.setPreferredSize(new Dimension(100, 30));
         btnSend = new JButton("Send");
         btnSend.setPreferredSize(new Dimension(100, 30));
         btnContacts = new JButton("Contacts");
@@ -172,6 +180,41 @@ public class ClientUI extends JPanel{
         btnDisconnect = new JButton("Disconnect");
         btnDisconnect.setPreferredSize(new Dimension(100, 170));
     }
+    private void addListeners() {
+        ActionListener listener = new ButtonActionListeners();
+        btnConnect.addActionListener(listener);
+        btnDisconnect.addActionListener(listener);
+        btnSend.addActionListener(listener);
+        btnChoosePic.addActionListener(listener);
+        btnMessageImage.addActionListener(listener);
+    }
+
+    public void displayUser(JLabel user) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                lblUsers.add(user);
+                tpClientList.add(user);
+                revalidate();
+            }
+        });
+    }
+    public void resetGUI() {
+        for(JLabel lbl : lblUsers) {
+            tpClientList.remove(lbl);
+        }
+        repaint();
+    }
+    public void removeUser(JLabel user) {
+        for(JLabel lbl : lblUsers) {
+            if(lbl.getText().equals(user.getText())) {
+                tpClientList.remove(lbl);
+                lblUsers.remove(user);
+                repaint();
+            }
+        }
+    }
+
 
     public JTextField getTfHost() {
         return tfHost;
@@ -188,6 +231,31 @@ public class ClientUI extends JPanel{
     public ImageIcon getProfilePicture() {
         return profilePicture;
     }
+
+    public JTextField getTfMessage() {
+        return tfMessage;
+    }
+
+    public ImageIcon getMessageImage() {
+        return messageImage;
+    }
+
+    public JTextArea getTaChatbox() {
+        return taChatbox;
+    }
+    public void setTextForLabel(String text) {
+        if(count == 0) {
+            sendTo.append(text);
+        } else {
+            sendTo.append(", " + text);
+        }
+        lblSendTo.setText("Skicka till: " + sendTo);
+        count++;
+    }
+    public void resetLabel() {
+        sendTo.setLength(0);
+        count = 0;
+    }
     private class ButtonActionListeners implements ActionListener {
 
         @Override
@@ -195,9 +263,53 @@ public class ClientUI extends JPanel{
             if(e.getSource() == btnSend) {
                 client.buttonPressed(ButtonType.Send);
             } else if(e.getSource() == btnConnect) {
-                client.buttonPressed(ButtonType.Connect);
+                if(tfName.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ange ett användarnamn");
+                } else if(tfPort.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ange port");
+                } else if(tfHost.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ange host");
+                } else {
+                    client.buttonPressed(ButtonType.Connect);
+                    btnConnect.setEnabled(false);
+                    tfHost.setEnabled(false);
+                    tfName.setEnabled(false);
+                    tfPort.setEnabled(false);
+                    btnChoosePic.setEnabled(false);
+                    btnDisconnect.setEnabled(true);
+                }
             } else if(e.getSource() == btnDisconnect) {
                 client.buttonPressed(ButtonType.Disconnect);
+                btnChoosePic.setEnabled(true);
+                btnConnect.setEnabled(true);
+                btnDisconnect.setEnabled(false);
+                tfHost.setEnabled(true);
+                tfName.setEnabled(true);
+                tfPort.setEnabled(true);
+                repaint();
+            }
+            else if(e.getSource() == btnChoosePic) {
+                JFileChooser jfc = new JFileChooser();
+                int response = jfc.showOpenDialog(null);
+                if(response == JFileChooser.APPROVE_OPTION) {
+                    pictureFile = jfc.getSelectedFile().toString();
+                    if(GUIUtilities.isImage(jfc.getSelectedFile().toString()) == false) {
+                        JOptionPane.showMessageDialog(null, "Fel filformat");
+                    } else {
+                        profilePicture = GUIUtilities.scaleImage(pictureFile, 50, 50);
+                    }
+                }
+            } else if(e.getSource() == btnMessageImage) {
+                JFileChooser jfc = new JFileChooser();
+                int response = jfc.showOpenDialog(null);
+                if(response == JFileChooser.APPROVE_OPTION) {
+                    String pictureFile = jfc.getSelectedFile().toString();
+                    if(GUIUtilities.isImage(jfc.getSelectedFile().toString()) == false) {
+                        JOptionPane.showMessageDialog(null, "Fel filformat");
+                    } else {
+                        messageImage = new ImageIcon(pictureFile);
+                    }
+                }
             }
         }
     }

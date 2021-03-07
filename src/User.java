@@ -4,6 +4,7 @@ import java.io.Serializable;
 public class User implements Serializable {
     private String username;
     private ImageIcon image;
+    private boolean isConnected;
 
     public User(String username, ImageIcon image) {
         this.username = username;
@@ -20,6 +21,14 @@ public class User implements Serializable {
 
     public int HaschCode() {
         return username.hashCode();
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
     }
 
     public boolean equals(Object obj) {

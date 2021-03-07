@@ -1,5 +1,9 @@
 public enum ButtonType {
     Connect,
     Disconnect,
-    Send
+    Send,
+    Contacts,
+    ContactsSend,
+    ContactsAdd,
+    ContactsDelete
 }
