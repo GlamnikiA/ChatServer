@@ -41,7 +41,6 @@ public class Server implements Runnable {
             this.socket = socket;
             ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
-
         }
 
         public ObjectOutputStream getOos() {
@@ -107,6 +106,13 @@ public class Server implements Runnable {
             }
         }
     }
+    //ToDo: Servern ska klara av att en användare (klient) avslutar sin anslutning till systemet.
+
+    //ToDo: uppdatera anslutna användare med en lista vilken innehåller samtliga anslutna användare.
+    // Uppdatering ska ske varje gång någon användare ansluter sig / avslutar sin anslutning.
+
+    //ToDo: Logga all trafik i systemet till fil/filer på hårddisken. Via ett UI på serversidan ska man kunna
+    // se all trafik mellan två valda tidpunkter.
 
     public static void main(String[] args) {
         new Server(123);
