@@ -187,6 +187,7 @@ public class ClientUI extends JPanel{
         btnSend.addActionListener(listener);
         btnChoosePic.addActionListener(listener);
         btnMessageImage.addActionListener(listener);
+        btnContacts.addActionListener(listener);
     }
 
     public void displayUser(JLabel user) {
@@ -310,6 +311,8 @@ public class ClientUI extends JPanel{
                         messageImage = new ImageIcon(pictureFile);
                     }
                 }
+            } else if(e.getSource() == btnContacts) {
+                client.buttonPressed(ButtonType.Contacts);
             }
         }
     }
