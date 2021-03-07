@@ -13,6 +13,7 @@ public class Server implements Runnable {
     public Server(int port) {
         this.port = port;
         clients = new Clients();
+        unsent = new UnsentMessages();
         new Thread(this).start();
     }
 
@@ -56,19 +57,22 @@ public class Server implements Runnable {
 
                 checkNewMessages(user);
 
+                while (true) {
+                    try {
+                        Message message = (Message) ois.readObject();
+                        message.setReceived();
+                        deliverMessage(message);
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
 
-            while (true) {
-                try {
-                    Message message = (Message) ois.readObject();
-                    message.setReceived();
-                    deliverMessage(message);
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
+
+            System.out.println("Klient nerkopplad");
         }
 
         private void checkNewMessages(User user) {
