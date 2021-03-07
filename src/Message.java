@@ -18,6 +18,14 @@ public class Message implements Serializable {
         this.image = image;
     }
 
+    public User getSender() {
+        return sender;
+    }
+
+    public ArrayList<User> getReceivers() {
+        return receivers;
+    }
+
     public void setReceived() {
         this.received = new Date();
     }
