@@ -3,6 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server implements Runnable {
     private int port;
@@ -51,7 +52,11 @@ public class Server implements Runnable {
         public void run() {
             try {
                 user = (User) ois.readObject();
+                System.out.println(user.getUsername() + " är ansluten");
                 clients.put(user, this);
+
+                checkNewMessages(user);
+
             }catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -67,6 +72,21 @@ public class Server implements Runnable {
             }
         }
 
+        private void checkNewMessages(User user) {
+            ArrayList<Message> messages = unsent.get(user);
+
+            if(messages != null) {
+                for (Message message: messages) {
+                    try {
+                        oos.writeObject(message);
+                        oos.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
         private void deliverMessage(Message message) {
 
             for (User reveiver: message.getReceivers()) {
@@ -75,6 +95,7 @@ public class Server implements Runnable {
                         ObjectOutputStream out = clients.get(reveiver).getOos();
                         out.writeObject(message);
                         out.flush();
+                        message.setDelivered();
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -84,7 +105,6 @@ public class Server implements Runnable {
                     unsent.put(reveiver, message);
                 }
             }
-
         }
     }
 

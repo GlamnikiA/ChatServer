@@ -18,7 +18,9 @@ public class UnsentMessages {
 
     }
     public synchronized ArrayList<Message> get(User user) {
-        return unsent.getOrDefault(user, null);
+        ArrayList<Message> messages = unsent.getOrDefault(user, null);
+        unsent.remove(user);
+        return messages;
     }
 
     // fler synchronized-metoder som behövs

@@ -3,6 +3,12 @@ import java.util.HashMap;
 public class Clients {
     private HashMap<User, Server.ClientHandler> clients; // = ...
     // egna tillägg
+
+
+    public Clients() {
+        this.clients = new HashMap<>();
+    }
+
     public synchronized void put(User user, Server.ClientHandler client) {
         clients.put(user,client);
     }
