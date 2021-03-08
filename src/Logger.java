@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Logger
 {
@@ -32,7 +33,7 @@ public class Logger
             recievers[i] = message.getReceivers().get(i).getUsername();
         }
         String text = message.getText();
-        String line = "Message by " + username + " to " + recievers.toString() + ": " + text;
+        String line = "Message from " + username + " to " + Arrays.toString( recievers ) + ": " + text;
         Log( line );
     }
 
@@ -79,6 +80,11 @@ public class Logger
 
     public static void main(String[] args) {
         Logger logger = new Logger( );
-        logger.Log( "Hello" );
+        User sender = new User( "Erik", null );
+        ArrayList<User> recievers = new ArrayList<User>(  );
+        recievers.add( sender );
+        recievers.add( sender );
+        Message message = new Message( sender, recievers, "Test", null );
+        logger.LogMessage( message );
     }
 }
