@@ -9,11 +9,13 @@ public class Server implements Runnable {
     private int port;
     private Clients clients;
     private UnsentMessages unsent;
+    private Logger logger;
 
     public Server(int port) {
         this.port = port;
         clients = new Clients();
         unsent = new UnsentMessages();
+        logger = new Logger();
         new Thread(this).start();
     }
 
@@ -54,6 +56,7 @@ public class Server implements Runnable {
                 user = (User) ois.readObject();
                 System.out.println(user.getUsername() + " är ansluten");
                 clients.put(user, this);
+                logger.LogConnect( user.getUsername( ), socket.getInetAddress().toString() );
 
                 checkNewMessages(user);
 
@@ -71,8 +74,11 @@ public class Server implements Runnable {
                 e.printStackTrace();
             }
 
-
             System.out.println("Klient nerkopplad");
+
+            //ToDo: Göra så att man loggar när klienten blir nerkopplad.
+            // Kommer nog aldrig hit eftersom tråden stöter på exception ClassCastException vid disconnect
+            logger.LogDisconnect( user.getUsername( ), socket.getInetAddress().toString() );
         }
 
         private void checkNewMessages(User user) {
@@ -83,6 +89,7 @@ public class Server implements Runnable {
                     try {
                         oos.writeObject(message);
                         oos.flush();
+                        logger.LogMessage( message );
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -99,7 +106,7 @@ public class Server implements Runnable {
                         out.writeObject(message);
                         out.flush();
                         message.setDelivered();
-
+                        logger.LogMessage( message );
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

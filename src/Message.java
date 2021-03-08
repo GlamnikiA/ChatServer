@@ -39,4 +39,5 @@ public class Message implements Serializable {
     public Date getDelivered() {
         return delivered;
     }
+    public String getText() { return text; }
 }
