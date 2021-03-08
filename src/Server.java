@@ -9,10 +9,13 @@ public class Server implements Runnable {
     private int port;
     private Clients clients;
     private UnsentMessages unsent;
+    private Logger logger;
 
     public Server(int port) {
         this.port = port;
         clients = new Clients();
+        unsent = new UnsentMessages();
+        logger = new Logger();
         new Thread(this).start();
     }
 
@@ -41,7 +44,6 @@ public class Server implements Runnable {
             this.socket = socket;
             ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
-
         }
 
         public ObjectOutputStream getOos() {
@@ -54,22 +56,35 @@ public class Server implements Runnable {
                 user = (User) ois.readObject();
                 System.out.println(user.getUsername() + " är ansluten");
                 clients.put(user, this);
+                logger.LogConnect( user.getUsername( ), socket.getInetAddress().toString() );
 
                 checkNewMessages(user);
 
-            }catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+                while (true) {
 
-            while (true) {
-                try {
-                    Message message = (Message) ois.readObject();
-                    message.setReceived();
-                    deliverMessage(message);
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
+                        Object obj = ois.readObject();
+                        if(obj instanceof Message) {
+                            Message message = (Message) ois.readObject();
+                            message.setReceived();
+                            deliverMessage(message);
+                        }
+                }
+
+            }catch (Exception e) {
+                if(socket!= null) {
+                    try {
+                        socket.close();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                 }
             }
+
+            System.out.println("Klient nerkopplad");
+
+            //ToDo: Göra så att man loggar när klienten blir nerkopplad.
+            // Kommer nog aldrig hit eftersom tråden stöter på exception ClassCastException vid disconnect
+            logger.LogDisconnect( user.getUsername( ), socket.getInetAddress().toString() );
         }
 
         private void checkNewMessages(User user) {
@@ -80,6 +95,7 @@ public class Server implements Runnable {
                     try {
                         oos.writeObject(message);
                         oos.flush();
+                        logger.LogMessage( message );
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -96,7 +112,7 @@ public class Server implements Runnable {
                         out.writeObject(message);
                         out.flush();
                         message.setDelivered();
-
+                        logger.LogMessage( message );
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -107,6 +123,13 @@ public class Server implements Runnable {
             }
         }
     }
+    //ToDo: Servern ska klara av att en användare (klient) avslutar sin anslutning till systemet.
+
+    //ToDo: uppdatera anslutna användare med en lista vilken innehåller samtliga anslutna användare.
+    // Uppdatering ska ske varje gång någon användare ansluter sig / avslutar sin anslutning.
+
+    //ToDo: Logga all trafik i systemet till fil/filer på hårddisken. Via ett UI på serversidan ska man kunna
+    // se all trafik mellan två valda tidpunkter.
 
     public static void main(String[] args) {
         new Server(123);

@@ -33,12 +33,15 @@ public class Message implements Serializable {
     public void setDelivered() {
         this.delivered = new Date();
     }
+
     public Date getReceived() {
         return received;
     }
+
     public Date getDelivered() {
         return delivered;
     }
+
 
     public ImageIcon getImage() {
         return image;
@@ -48,3 +51,4 @@ public class Message implements Serializable {
         return text;
     }
 }
+
