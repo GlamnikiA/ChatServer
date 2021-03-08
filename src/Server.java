@@ -61,17 +61,23 @@ public class Server implements Runnable {
                 checkNewMessages(user);
 
                 while (true) {
-                    try {
-                        Message message = (Message) ois.readObject();
-                        message.setReceived();
-                        deliverMessage(message);
-                    } catch (IOException | ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
+
+                        Object obj = ois.readObject();
+                        if(obj instanceof Message) {
+                            Message message = (Message) ois.readObject();
+                            message.setReceived();
+                            deliverMessage(message);
+                        }
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+            }catch (Exception e) {
+                if(socket!= null) {
+                    try {
+                        socket.close();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
             }
 
             System.out.println("Klient nerkopplad");
