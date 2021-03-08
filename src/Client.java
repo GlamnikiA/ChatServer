@@ -146,13 +146,20 @@ public class Client {
                     if(obj instanceof User) {
                         if(((User) obj).isConnected()) {
                             contacts.setOnlineUser((User)obj);
+                            System.out.println(((User) obj).getUsername());
                             gui.displayUser(GUIUtilities.createUserLabel(((User) obj).getImage(), ((User) obj).getUsername()));
                         } else {
                             contacts.removeOnlineContact((User)obj);
+                            System.out.println(((User) obj).getUsername());
                             gui.removeUser(GUIUtilities.createUserLabel(((User) obj).getImage(), ((User) obj).getUsername()));
                         }
                     } else if (obj instanceof Message) {
-                        //Kommer snart
+                        Message message = (Message)obj;
+                        if(message.getImage() == null) {
+                            gui.getTaChatbox().append(message.getSender().getUsername()+ ": " + message.getText() + '(' + message.getDelivered() + ')' + "\n");
+                        } else {
+                            gui.displayImage(message.getText(), message.getImage());
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

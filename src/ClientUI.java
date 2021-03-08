@@ -257,6 +257,12 @@ public class ClientUI extends JPanel{
         sendTo.setLength(0);
         count = 0;
     }
+    public void displayImage(String text, ImageIcon image) {
+        Image scaled = GUIUtilities.scaleImage(image.getImage(), 400,400);
+        ImageIcon scaledImage = new ImageIcon(scaled);
+        GUIUtilities.displayImage(text, scaledImage);
+        revalidate();
+    }
     private class ButtonActionListeners implements ActionListener {
 
         @Override

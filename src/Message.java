@@ -39,4 +39,12 @@ public class Message implements Serializable {
     public Date getDelivered() {
         return delivered;
     }
+
+    public ImageIcon getImage() {
+        return image;
+    }
+
+    public String getText() {
+        return text;
+    }
 }
