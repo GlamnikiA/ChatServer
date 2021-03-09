@@ -4,6 +4,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class ClientUI extends JPanel{
@@ -215,7 +217,9 @@ public class ClientUI extends JPanel{
             }
         }
     }
-
+    public JLabel getLblSendTo() {
+        return lblSendTo;
+    }
 
     public JTextField getTfHost() {
         return tfHost;
@@ -257,10 +261,10 @@ public class ClientUI extends JPanel{
         sendTo.setLength(0);
         count = 0;
     }
-    public void displayImage(String text, ImageIcon image) {
+    public void displayImage(String sender, String text, ImageIcon image) {
         Image scaled = GUIUtilities.scaleImage(image.getImage(), 400,400);
         ImageIcon scaledImage = new ImageIcon(scaled);
-        GUIUtilities.displayImage(text, scaledImage);
+        GUIUtilities.displayImage(sender, text, scaledImage);
         revalidate();
     }
     private class ButtonActionListeners implements ActionListener {
@@ -269,6 +273,8 @@ public class ClientUI extends JPanel{
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == btnSend) {
                 client.buttonPressed(ButtonType.Send);
+                tfMessage.setText("");
+                messageImage = null;
             } else if(e.getSource() == btnConnect) {
                 if(tfName.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Ange ett användarnamn");
@@ -277,6 +283,10 @@ public class ClientUI extends JPanel{
                 } else if(tfHost.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Ange host");
                 } else {
+                    if(pictureFile == null) {
+                        pictureFile = "files//avatardefault_92824.png";
+                        profilePicture = GUIUtilities.scaleImage(pictureFile, 50, 50);
+                    }
                     client.buttonPressed(ButtonType.Connect);
                     btnConnect.setEnabled(false);
                     tfHost.setEnabled(false);

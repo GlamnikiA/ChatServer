@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Client {
     private ClientUI gui;
@@ -23,21 +24,37 @@ public class Client {
         switch (button) {
             case Connect:
                 connect();
+                contacts.readContactsFromFile("files/contacts.dat");
                 break;
             case Disconnect:
+                contacts.writeContactsToFile("files/contacts.dat");
                 disconnect();
                 break;
             case Send:
                 sendMessage(getMessageFromView());
+                for (int i = 0; i < receiverList.size(); i++) {
+                    receiverList.remove(i);
+                }
                 break;
             case Contacts:
                 contactsGUI = new ContactsGUI(this);
                 contactsGUI.createFrame();
                 String[] onlineUsers = getUsernames(contacts.getOnlineContacts());
+                String[] savedContacts = getUsernames(contacts.getSavedContacts());
                 contactsGUI.setOnlineUserList(onlineUsers);
+                contactsGUI.setSavedContactList(savedContacts);
                 break;
             case ContactsSend:
                 updateReceiverList();
+                break;
+            case ContactsAdd:
+                int index = contactsGUI.getListIndex();
+                User u = contacts.getContactAt(index);
+                contacts.setSavedContact(u);
+                break;
+            case ContactsDelete:
+                int i = contactsGUI.getContactListIndex();
+                contacts.removeContact(i);
         }
 
     }
@@ -71,7 +88,7 @@ public class Client {
         sendUserToServer(user);
         gui.resetGUI();
         gui.getTaChatbox().setText("");
-        gui.getTaChatbox().append("Du har lämnat chatten");
+        gui.getTaChatbox().append("Du har lämnat chatten\n");
         close();
     }
     private void close() {
@@ -101,6 +118,8 @@ public class Client {
         } else {
             ArrayList<User> newReceiverList = new ArrayList<>(receiverList);
             message = new Message(user, newReceiverList, text, icon);
+            gui.getLblSendTo().setText("Send to: ");
+            gui.resetLabel();
         }
         return message;
     }
@@ -120,9 +139,16 @@ public class Client {
     }
     private void updateReceiverList() {
         int index = contactsGUI.getListIndex();
-        User receiver = contacts.getContactAt(index);
-        gui.setTextForLabel(receiver.getUsername());
-        receiverList.add(receiver);
+        if(index > -1) {
+            User receiver = contacts.getContactAt(index);
+            gui.setTextForLabel(receiver.getUsername());
+            receiverList.add(receiver);
+        } else {
+            int contactIndex = contactsGUI.getContactListIndex();
+            User receiver = contacts.getSavedContactAt(contactIndex);
+            gui.setTextForLabel(receiver.getUsername());
+            receiverList.add(receiver);
+        }
     }
 
     public void setRunning(boolean running) {
@@ -145,20 +171,19 @@ public class Client {
                     Object obj = in.readObject();
                     if(obj instanceof User) {
                         if(((User) obj).isConnected()) {
-                            contacts.setOnlineUser((User)obj);
-                            System.out.println(((User) obj).getUsername());
+                            contacts.setOnlineContact((User)obj);
                             gui.displayUser(GUIUtilities.createUserLabel(((User) obj).getImage(), ((User) obj).getUsername()));
                         } else {
                             contacts.removeOnlineContact((User)obj);
-                            System.out.println(((User) obj).getUsername());
                             gui.removeUser(GUIUtilities.createUserLabel(((User) obj).getImage(), ((User) obj).getUsername()));
                         }
                     } else if (obj instanceof Message) {
                         Message message = (Message)obj;
+                        System.out.println(message.getText());
                         if(message.getImage() == null) {
                             gui.getTaChatbox().append(message.getSender().getUsername()+ ": " + message.getText() + '(' + message.getDelivered() + ')' + "\n");
                         } else {
-                            gui.displayImage(message.getText(), message.getImage());
+                            gui.displayImage(message.getSender().getUsername(), message.getText(), message.getImage());
                         }
                     }
                 } catch (IOException e) {
@@ -169,7 +194,8 @@ public class Client {
             }
         }
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         new Client();
+        System.out.println(InetAddress.getLocalHost());
     }
 }

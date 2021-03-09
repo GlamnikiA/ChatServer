@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 
 public class ContactsGUI extends JPanel{
     private JList<String> onlineUserList;
-    private JList<String> offlineUserList;
+    private JList<String> savedContactsList;
     private JButton btnAdd;
     private JButton btnSend;
     private JButton btnDel;
@@ -69,8 +69,8 @@ public class ContactsGUI extends JPanel{
     private void createCenterPanel(int width, int height) {
         pnlCenter.setPreferredSize(new Dimension(width, height));
         pnlCenter.setBorder(new TitledBorder("Your contacts"));
-        offlineUserList = new JList<>();
-        pane = new JScrollPane(offlineUserList);
+        savedContactsList = new JList<>();
+        pane = new JScrollPane(savedContactsList);
         pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         pane.setPreferredSize(new Dimension(width, height));
         pnlCenter.add(pane);
@@ -89,6 +89,9 @@ public class ContactsGUI extends JPanel{
     public void setOnlineUserList(String[] userName) {
         onlineUserList.setListData(userName);
     }
+    public void setSavedContactList(String[] username) {
+        savedContactsList.setListData(username);
+    }
     private void addButtonListeners() {
         ActionListener listener = new addButtonListener();
         btnAdd.addActionListener(listener);
@@ -97,6 +100,9 @@ public class ContactsGUI extends JPanel{
     }
     public int getListIndex() {
         return onlineUserList.getSelectedIndex();
+    }
+    public int getContactListIndex() {
+        return savedContactsList.getSelectedIndex();
     }
 
     private void addListListener() {

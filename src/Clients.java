@@ -1,8 +1,10 @@
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Clients {
-    private HashMap<User, Server.ClientHandler> clients; // = ...
-    // egna tillägg
+    private HashMap<User, Server.ClientHandler> clients;
 
 
     public Clients() {
@@ -13,12 +15,14 @@ public class Clients {
         clients.put(user,client);
     }
     public synchronized Server.ClientHandler get(User user) {
-        return get(user);
+        return clients.get(user);
     }
 
     public synchronized boolean containsKey(User user) {
         return clients.containsKey(user);
     }
+    public synchronized void remove(User user) {
+        clients.remove(user);
+    }
 
-// fler synchronized-metoder som behövs
 }

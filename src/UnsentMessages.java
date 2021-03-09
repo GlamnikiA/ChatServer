@@ -2,24 +2,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UnsentMessages {
-    private HashMap<User, ArrayList<Message>> unsent = new HashMap<>();
+    private HashMap<String, ArrayList<Message>> unsent = new HashMap<>();
     // egna tillägg
-    public synchronized void put(User user, Message message) {
+    public synchronized void put(String username, Message message) {
     // hämta ArrayList – om null skapa en och placera i unsend
     // lägga till Message i ArrayList
 
-        if (unsent.get(user) == null) {
+        if (unsent.get(username) == null) {
             ArrayList<Message> list = new ArrayList<>();
             list.add(message);
-            unsent.put(user, list);
-        } else {
-            unsent.get(user).add(message);
+            unsent.put(username, list);
         }
-
     }
-    public synchronized ArrayList<Message> get(User user) {
-        ArrayList<Message> messages = unsent.getOrDefault(user, null);
-        unsent.remove(user);
+    public synchronized ArrayList<Message> get(String username) {
+        ArrayList<Message> messages = unsent.getOrDefault(username, null);
+        unsent.remove(username);
         return messages;
     }
 

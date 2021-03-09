@@ -15,8 +15,8 @@ public class GUIUtilities {
     public static boolean isImage(String filepath) {
         return filepath.endsWith(".jpg") || filepath.endsWith(".png") || filepath.endsWith(".jpeg") || filepath.endsWith(".gif");
     }
-    public static void displayImage(String text, ImageIcon image) {
-        JOptionPane.showMessageDialog(null, text, "Bild från " + "Någon", JOptionPane.INFORMATION_MESSAGE, image);
+    public static void displayImage(String sender, String text, ImageIcon image) {
+        JOptionPane.showMessageDialog(null, text, "Bild från: " + sender, JOptionPane.INFORMATION_MESSAGE, image);
     }
     public static JLabel createUserLabel(ImageIcon icon, String name) {
         JLabel lbl = new JLabel(icon);
