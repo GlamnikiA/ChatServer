@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,6 +6,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+/*
+* Flertrådad chatserver.
+*/
 public class Server implements Runnable {
     private int port;
     private Clients clients;
@@ -49,6 +52,9 @@ public class Server implements Runnable {
         users.remove(user);
     }
 
+    /*
+    * Inre klass för att hantera klienter som ansluter sig till servern.
+    */
     public class ClientHandler extends Thread {
         private Socket socket;
         private ObjectInputStream ois;
@@ -111,6 +117,11 @@ public class Server implements Runnable {
             System.out.println("Klient nerkopplad");
             logger.LogDisconnect(user.getUsername(), socket.getInetAddress().toString());
         }
+
+        /*
+        * Stänger nätverksstömmar och socket.
+        * Returtyp: void
+        */
         private void close() {
             try {
                 if (oos != null) {
