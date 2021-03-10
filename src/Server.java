@@ -1,11 +1,10 @@
+import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server implements Runnable {
@@ -22,6 +21,7 @@ public class Server implements Runnable {
         users = new ArrayList<>();
         unsent = new UnsentMessages();
         logger = new Logger();
+        logger.CreateLoggerGUI();
         new Thread(this).start();
     }
 
@@ -175,13 +175,7 @@ public class Server implements Runnable {
             }
         }
     }
-    //ToDo: Servern ska klara av att en användare (klient) avslutar sin anslutning till systemet.
 
-    //ToDo: uppdatera anslutna användare med en lista vilken innehåller samtliga anslutna användare.
-    // Uppdatering ska ske varje gång någon användare ansluter sig / avslutar sin anslutning.
-
-    //ToDo: Logga all trafik i systemet till fil/filer på hårddisken. Via ett UI på serversidan ska man kunna
-    // se all trafik mellan två valda tidpunkter.
 
     public static void main(String[] args) {
         new Server(101);

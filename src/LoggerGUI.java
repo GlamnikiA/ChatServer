@@ -60,6 +60,7 @@ public class LoggerGUI extends JPanel
 
     public void CreateFrame() {
         JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(width, height));
         frame.setTitle("Logger");
         frame.setContentPane(this);
