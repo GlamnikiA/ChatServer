@@ -181,8 +181,8 @@ public class Server implements Runnable {
                 for (User u : users) {
                     if (u.equals(receiver)) {
                         try {
-                            message.setDelivered();
                             clients.get(u).getOos().writeObject(message);
+                            message.setDelivered();
                             logger.LogMessage(message);
                         } catch (IOException e) {
                             e.printStackTrace();
