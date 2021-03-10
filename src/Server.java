@@ -108,11 +108,7 @@ public class Server implements Runnable {
                 e.printStackTrace();
             }
 
-
             System.out.println("Klient nerkopplad");
-
-            //ToDo: Göra så att man loggar när klienten blir nerkopplad.
-            // Kommer nog aldrig hit eftersom tråden stöter på exception ClassCastException vid disconnect
             logger.LogDisconnect(user.getUsername(), socket.getInetAddress().toString());
         }
         private void close() {
@@ -139,6 +135,12 @@ public class Server implements Runnable {
             }
         }
 
+        /*
+        * Kollar om det finns några olevererade meddelanden givet ett användarnamn. Om det finns så levereras meddelandena.
+        * Parameter: User
+        * Returtyp: void
+        */
+
         private void checkNewMessages(User user) {
             ArrayList<Message> messages = unsent.get(user.getUsername());
 
@@ -157,6 +159,12 @@ public class Server implements Runnable {
             }
         }
 
+        /*
+        * Levererar ett mottaget meddelande till mottagare. Om en mottagare är offline sparas meddelandet till
+        * mottagaren kommer online.
+        * Inparameter: Message
+        * Returtyp: void
+        */
         private void deliverMessage(Message message) {
             for (User receiver : message.getReceivers()) {
                 for (User u : users) {
@@ -175,7 +183,6 @@ public class Server implements Runnable {
             }
         }
     }
-
 
     public static void main(String[] args) {
         new Server(101);
