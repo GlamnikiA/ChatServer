@@ -19,6 +19,7 @@ public class ContactsGUI extends JPanel{
     private JPanel pnlSouth;
     private Client client;
     private JScrollPane pane;
+    private JFrame frame;
 
     public ContactsGUI(Client client) {
         initializeMainPanel();

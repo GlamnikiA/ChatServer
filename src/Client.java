@@ -89,17 +89,8 @@ public class Client {
         gui.resetGUI();
         gui.getTaChatbox().setText("");
         gui.getTaChatbox().append("Du har lämnat chatten\n");
-        close();
     }
-    private void close() {
-        try {
-            socket.close();
-            out.close();
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
     public void contactListIndicesChanged(int index) {
     }
     private User getUserFromView() {
@@ -194,8 +185,7 @@ public class Client {
             }
         }
     }
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) {
         new Client();
-        System.out.println(InetAddress.getLocalHost());
     }
 }

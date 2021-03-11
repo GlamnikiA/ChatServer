@@ -99,6 +99,16 @@ public class ClientUI extends JPanel{
         frame.setVisible(true);
 
         addListeners();
+
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                if(btnConnect.isEnabled() == false) {
+                    client.buttonPressed(ButtonType.Disconnect);
+                }
+            }
+        });
+
     }
     private void createPanels() {
         pnlNorth = new JPanel();

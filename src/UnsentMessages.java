@@ -11,11 +11,14 @@ public class UnsentMessages {
     * Lägger till användarnamn och meddelande i hashmapen
     */
     public synchronized void put(String username, Message message) {
-        if (unsent.get(username) == null) {
-            ArrayList<Message> list = new ArrayList<>();
-            list.add(message);
-            unsent.put(username, list);
+        if(get(username) == null) {
+            unsent.put(username, new ArrayList<Message>());
         }
+        get(username).add(message);
+    }
+
+    public synchronized void clear() {
+        unsent.clear();
     }
 
     /*
@@ -23,8 +26,6 @@ public class UnsentMessages {
     * Inparameter String
     */
     public synchronized ArrayList<Message> get(String username) {
-        ArrayList<Message> messages = unsent.getOrDefault(username, null);
-        unsent.remove(username);
-        return messages;
+        return unsent.get(username);
     }
 }

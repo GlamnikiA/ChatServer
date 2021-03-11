@@ -78,6 +78,7 @@ public class Server implements Runnable {
                 user = (User) ois.readObject();
                 broadcastUser(user);
                 checkNewMessages(user);
+                unsent.clear();
                 clients.put(user, this);
                 users.add(user);
                 for (User u : users) {
@@ -161,7 +162,6 @@ public class Server implements Runnable {
                         Message msg = new Message(message.getSender(), message.getReceivers(),"Oläst meddelande : " + message.getText(), message.getImage());
                         msg.setDelivered();
                         oos.writeObject(msg);
-                        oos.flush();
                         logger.LogMessage(message);
                     } catch (IOException e) {
                         e.printStackTrace();
